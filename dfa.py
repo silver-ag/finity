@@ -7,12 +7,27 @@
 #   if there's no input symbol available, then a special IOSymbol('eof') is read
 # output is associated with transitions and is produced when they're followed
 
+"""
+tools for deterministic finite automata
+
+the automata defined here are able to produce output as well as take input. for mathematical purposes this is equivalent to an
+ordinary finite automaton that takes a language like "in(symbols)out(symbols)in(symbols)out(symbols)..."
+
+exports:
+IOSymbol\t- a class of symbol suitable for the alphabet
+State\t- a class for automaton states, which store their transitions
+Transition\t- a class for unconditional transitions, which includes their output
+TransitionsRow\t - a class for a transition table row, mapping input IOSymbols to Transitions
+DFA\t - a class for the DFA itself
+"""
 
 from itertools import combinations
 
 class IOSymbol:
+    """a class of symbol equipped with types, to permit clarity with symbols like <EOF>"""
     kinds = ['char', 'eof']
     def __init__(self, kind, value = None):
+        """takes a type from IOSymbol.kinds and an optional arbitrary value"""
         if kind not  in self.kinds:
             raise Exception(f"unrecognised IOSymbol kind: {kind}")
         self.kind = kind
@@ -32,7 +47,9 @@ class IOSymbol:
         return f"<IOSymbol '{self.value}' ({self.kind})>"
 
 class State:
+    """a class for DFA states, storing a name and the transitions that leave this state"""
     def __init__(self, name, transitions = None):
+        """takes a name and an optional transitions argumant that may be an unconditional Transition, a TransitionRow, or a string or dict that will be used to construct one of those two repsectively"""
         self.name = name
         if isinstance(transitions, str):
             self.transitions = Transition(transitions)
@@ -55,17 +72,24 @@ class State:
         return f"<State: {str(self)}>"
 
 class Transition:
+    """a small class for a transition, storing a destination state name and an optional output list of IOSymbols"""
     def __init__(self, state_to, output = []):
+        """takes a destination state name and an optional output list of IOSymbols"""
         self.state_to = state_to
         self.output = output if isinstance(output, list) else [output]
 
 class TransitionsRow:
+    """a class for a row on the transition table"""
     def __init__(self, inputs):
-        # transitions in form {<IOSymbol input>: <Transition>, ...}
+        """takes input in the form {<IOSymbol input>: <Transition>, ...}"""
         self.inputs = inputs
 
 class DFA:
-    def __init__(self, start, states):
+    """a class for a finite automaton
+
+    provides decide and minimise functions as well as the ability to run the automaton directly."""
+    def __init__(self, start, states, minimise = True):
+        """takes a starting state name and a list of States. minimises automatically by default, this can be disabled with the minimise argument"""
         self.states = {}
         for state in states:
             if state.name in self.states:
@@ -78,8 +102,10 @@ class DFA:
             raise Exception(f"DFA given nonexistant start state '{start}'")
         
         self.epsilons_minimised = False
+        if minimise:
+            self.minimise()
     def minimise_epsilons(self):
-        # remove all epsilon transitions except those that point back at the state they come from
+        """remove all epsilon transitions except those that point back at the state they come from"""
         while True:
             removed = False
             for state in self.states.values():
@@ -101,7 +127,10 @@ class DFA:
             else:
                 break
         self.epsilons_minimised = True
-    def run(self, start, input_buffer = []):
+    def run(self, start = None, input_buffer = []):
+        """run the automaton, starting from the default start state unless otherwise specified, on the given input list of IOSymbols"""
+        if start is None:
+            start = self.start
         current_state = self.states[start]
         while True:
             next_state, output, input_buffer = self.step(current_state, input_buffer)
@@ -113,6 +142,9 @@ class DFA:
             else:
                 current_state = next_state
     def step(self, state, input_buffer):
+        """make one transition from the given state using the given input list of IOSymbols.
+
+        returns (<next State>, <output list of IOSymbols>, <remaining input list of IOSymbols>)"""
         if state.transitions is None:
             next_state_name = None
             output = []
@@ -140,7 +172,7 @@ class DFA:
             next_state = self.states[next_state_name]
         return (next_state, output, input_buffer)
     def decide(self, start, possible_inputs):
-        # decide whether the DFA will or may halt, starting from state <start> with allowed input alphabet <possible_inputs>
+        """decide whether the DFA will or may halt, starting from state <start> with allowed input alphabet <possible_inputs>"""
         def decide_recursive(start, visited = []) :
             if start in visited:
                 return (False, True)
@@ -171,8 +203,9 @@ class DFA:
         else:
             raise Exception(f"should not happen: apparently neither loops nor halts")
     def minimise(self):
-        # minimise DFA
-        # ensures that if the default start state is indistinguishable from some others, the resulting aggregate state has the name of the start state rather than any of the others
+        """minimise DFA
+
+        ensures that if the default start state is indistinguishable from some others, the resulting aggregate state has the name of the start state rather than any of the others"""
         if not self.epsilons_minimised:
             self.minimise_epsilons()
         distinctness_table = {pair: None for pair in combinations(self.states.keys(), 2)}
@@ -250,17 +283,6 @@ class DFA:
                         state.transitions.inputs[symbol].state_to = representative_states[equivalence_classes[state.transitions.inputs[symbol].state_to]]
         for state in to_remove:
             self.states.pop(state)
-
-            
-        
-
-
-
-def assoc_index(alst, v):
-    for i in range(len(alst)):
-        if alst[i][0] == v:
-            return i
-    return False
 
 test = DFA('A',
            [State('A', transitions = {IOSymbol('char','a'): Transition('B1', [IOSymbol('char','x')]), IOSymbol('char','b'): Transition('preB2', [])}),
