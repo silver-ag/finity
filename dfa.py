@@ -224,7 +224,7 @@ class DFA:
                 return record_distinctness(state_a, state_b, state_b.transitions is not None)
             if isinstance(state_a.transitions, Transition) and isinstance(state_b.transitions, Transition):
                 if state_a.transitions.output == state_b.transitions.output:
-                    assert(state_a.transitions.state_to == state_a.name and state_b.transitions.state_to == state_b.name, "uneliminated non-looping epsilon transition found")
+                    assert((state_a.transitions.state_to == state_a.name) and (state_b.transitions.state_to == state_b.name)) # should never happen, means we didn't succeed in eliminating non-self-targeting epsilons
                     #print(f"3 {state_a} {state_b} False")
                     return record_distinctness(state_a, state_b, False)
             if isinstance(state_a.transitions, TransitionsRow) and isinstance(state_b.transitions, TransitionsRow):
@@ -284,23 +284,24 @@ class DFA:
         for state in to_remove:
             self.states.pop(state)
 
-test = DFA('A',
-           [State('A', transitions = {IOSymbol('char','a'): Transition('B1', [IOSymbol('char','x')]), IOSymbol('char','b'): Transition('preB2', [])}),
-            State('preB2', transitions = Transition('B2', [IOSymbol('char','y')])), # eliminated by epsilon minimisiation
-            State('B1', transitions = {IOSymbol('char','c'): Transition('A', output = [IOSymbol('char','z')])}),
-            State('B2', transitions = {IOSymbol('char','c'): Transition('A', output = [IOSymbol('char','z')])})])
-
-test.run('A', [IOSymbol('char','a'), IOSymbol('char','c'), IOSymbol('char','b'), IOSymbol('char','c')])
-
-print(test.decide('A', {IOSymbol('char','a'),IOSymbol('char','b')}))
-
-
-test2 = DFA('A1',
-            [State('A1', {IOSymbol('char','b'): Transition('B', [IOSymbol('char','b')])}),
-             State('A2', {IOSymbol('char','b'): Transition('D', [IOSymbol('char','b')])}),
-             State('B', {IOSymbol('char','a'): Transition('C', [IOSymbol('char','b')])}),
-             State('C', {IOSymbol('char','a'): Transition('X', [IOSymbol('char','b')])}),
-             State('D', {IOSymbol('char','a'): Transition('D', [IOSymbol('char','b')])}),
-             State('X', {IOSymbol('char','a'): Transition('C', [IOSymbol('char','b')])})])
+#
+#test = DFA('A',
+#           [State('A', transitions = {IOSymbol('char','a'): Transition('B1', [IOSymbol('char','x')]), IOSymbol('char','b'): Transition('preB2', [])}),
+#            State('preB2', transitions = Transition('B2', [IOSymbol('char','y')])), # eliminated by epsilon minimisiation
+#            State('B1', transitions = {IOSymbol('char','c'): Transition('A', output = [IOSymbol('char','z')])}),
+#            State('B2', transitions = {IOSymbol('char','c'): Transition('A', output = [IOSymbol('char','z')])})])
+#
+#test.run('A', [IOSymbol('char','a'), IOSymbol('char','c'), IOSymbol('char','b'), IOSymbol('char','c')])
+#
+#print(test.decide('A', {IOSymbol('char','a'),IOSymbol('char','b')}))
+#
+#
+#test2 = DFA('A1',
+#            [State('A1', {IOSymbol('char','b'): Transition('B', [IOSymbol('char','b')])}),
+#             State('A2', {IOSymbol('char','b'): Transition('D', [IOSymbol('char','b')])}),
+#             State('B', {IOSymbol('char','a'): Transition('C', [IOSymbol('char','b')])}),
+#             State('C', {IOSymbol('char','a'): Transition('X', [IOSymbol('char','b')])}),
+#             State('D', {IOSymbol('char','a'): Transition('D', [IOSymbol('char','b')])}),
+#             State('X', {IOSymbol('char','a'): Transition('C', [IOSymbol('char','b')])})])
 
 
