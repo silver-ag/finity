@@ -12,3 +12,5 @@ many people that it's worth burning a lot of compute to make it more efficient.
 
 finity.py exports `compile(filename, verbose = True)` and `optimise(FSM, verbose = True)`. both return an `FSM` object, which has a `run(start_state = State('start'))`
 method. `compile` and `optimise` both return an `FSM` whose first state is `State('start')`, but this isn't guaranteed for `FSM`s constructed manually.
+
+by default, for proof of concept purposes, all variable must be nonnegative integers less than four. this limit can be increased by adjusting `MAXINT` at the top of finity.py.
