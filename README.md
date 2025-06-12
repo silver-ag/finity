@@ -6,7 +6,8 @@ doesn't apply to it. this gives us desirable properties - you can determine whet
 program *perfectly*, you can determine whether two finity programs have the same behaviour, etc. the downside is that for reasonably sized programs this requires a
 great deal of computing power. this is a proof of concept, but a more sophisticated version might have real-world applications in cases like embedded systems, where
 speed is important but it's easy to get access to a computer that's much more powerful than the one it'll be running on, or when a program will be run so often by so
-many people that it's worth burning a lot of compute to make it more efficient.
+many people that it's worth burning a lot of compute to make it more efficient. a future version will hopefully add the ability to partially optimise, or even
+partially convert to an automaton while leaving other parts unchanged, for large programs and users without much compute available.
 
 ### usage
 
