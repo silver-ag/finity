@@ -1,0 +1,23 @@
+
+program: (goto | conditionalgoto | input | assignment | output | label)*
+
+goto: "GOTO" LABELNAME
+conditionalgoto: "GOTO" LABELNAME "IF" expression
+label: ":" LABELNAME
+input: VARNAME "<-" "INPUT"
+output: (VARNAME | STRING) "->" "OUTPUT"
+assignment: VARNAME "=" expression
+expression: value | operation | "(" expression ")"
+value: VARNAME | NUMBER
+operation: expression OPERATOR expression
+
+LABELNAME: /[A-Z_]+/
+VARNAME: /[a-z_]+/
+OPERATOR: "+" | "-" | "*" | "/" | "==" | "<" | ">"
+COMMENT: /\/\/[^\n]*/
+
+%import common.ESCAPED_STRING -> STRING
+%import common.INT -> NUMBER
+%import common.WS
+%ignore WS
+%ignore COMMENT

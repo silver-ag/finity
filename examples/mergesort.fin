@@ -1,0 +1,142 @@
+// implement bubblesort and quicksort and see how they each compile down
+"enter five items to be sorted:\n" -> OUTPUT
+"1: " -> OUTPUT
+a <- INPUT
+"2: " -> OUTPUT
+b <- INPUT
+"3: " -> OUTPUT
+c <- INPUT
+"4: " -> OUTPUT
+d <- INPUT
+"5: " -> OUTPUT
+e <- INPUT
+
+
+:CHECKSORTED
+
+GOTO MERGE IF a > b
+GOTO MERGE IF b > c
+GOTO MERGE IF c > d
+GOTO MERGE IF d > e
+
+"list sorted: " -> OUTPUT
+a -> OUTPUT
+", " -> OUTPUT
+b -> OUTPUT
+", " -> OUTPUT
+c -> OUTPUT
+", " -> OUTPUT
+d -> OUTPUT
+", " -> OUTPUT
+e -> OUTPUT
+"\n" -> OUTPUT
+GOTO END
+
+
+:MERGE
+
+ab_first = a
+GOTO SKIPA IF a < b
+ab_first = b
+:SKIPA
+
+ab_second = a
+GOTO SKIPB IF a > b
+ab_second = b
+:SKIPB
+
+cd_first = c
+GOTO SKIPC IF c < d
+cd_first = d
+:SKIPC
+
+cd_second = c
+GOTO SKIPD IF c > d
+cd_second = d
+:SKIPD
+
+abcd_first = ab_first
+GOTO TAKEN_ABF_FIRST IF ab_first < cd_first
+abcd_first = cd_first
+GOTO TAKEN_CDF_FIRST
+
+:TAKEN_ABF_FIRST
+abcd_second = ab_second
+GOTO TAKEN_ABS_SECOND IF ab_second < cd_first
+abcd_second = cd_first
+GOTO TAKEN_CDF_SECOND
+
+:TAKEN_CDF_FIRST
+abcd_second = ab_first
+GOTO TAKEN_ABF_SECOND IF ab_first < cd_second
+abcd_second = cd_second
+GOTO TAKEN_CDS_SECOND
+
+:TAKEN_ABS_SECOND
+abcd_third = cd_first
+abcd_fourth = cd_second
+GOTO SORTED_ABCD
+
+:TAKEN_CDS_SECOND
+abcd_third = ab_first
+abcd_fourth = ab_second
+GOTO SORTED_ABCD
+
+:TAKEN_ABF_SECOND // the same, since we've got the same leftovers
+:TAKEN_CDF_SECOND
+abcd_third = ab_second
+GOTO TAKEN_ABS_THIRD IF ab_second < cd_second
+abcd_third = cd_second
+abcd_fourth = ab_second
+GOTO SORTED_ABCD
+:TAKEN_ABS_THIRD
+abcd_fourth = cd_second
+GOTO SORTED_ABCD
+
+:SORTED_ABCD
+GOTO E_FIRST IF e < abcd_first
+GOTO E_SECOND IF e < abcd_second
+GOTO E_THIRD IF e < abcd_third
+GOTO E_FOURTH IF e < abcd_fourth
+GOTO E_FIFTH
+
+:E_FIRST
+a = e
+b = abcd_first
+c = abcd_second
+d = abcd_third
+e = abcd_fourth
+GOTO CHECKSORTED
+
+:E_SECOND
+a = abcd_first
+b = e
+c = abcd_second
+d = abcd_third
+e = abcd_fourth
+GOTO CHECKSORTED
+
+:E_THIRD
+a = abcd_first
+b = abcd_second
+c = e
+d = abcd_third
+e = abcd_fourth
+GOTO CHECKSORTED
+
+:E_FOURTH
+a = abcd_first
+b = abcd_second
+c = abcd_third
+d = e
+e = abcd_fourth
+GOTO CHECKSORTED
+
+:E_FIFTH
+a = abcd_first
+b = abcd_second
+c = abcd_third
+d = abcd_fourth
+GOTO CHECKSORTED
+
+:END

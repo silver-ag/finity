@@ -1,0 +1,65 @@
+// implement bubblesort and quicksort and see how they each compile down
+"enter five items to be sorted:\n" -> OUTPUT
+"1: " -> OUTPUT
+a <- INPUT
+"2: " -> OUTPUT
+b <- INPUT
+"3: " -> OUTPUT
+c <- INPUT
+"4: " -> OUTPUT
+d <- INPUT
+"5: " -> OUTPUT
+e <- INPUT
+
+
+:CHECKSORTED
+
+GOTO BUBBLE IF a > b
+GOTO BUBBLE IF b > c
+GOTO BUBBLE IF c > d
+GOTO BUBBLE IF d > e
+
+"list sorted: " -> OUTPUT
+a -> OUTPUT
+", " -> OUTPUT
+b -> OUTPUT
+", " -> OUTPUT
+c -> OUTPUT
+", " -> OUTPUT
+d -> OUTPUT
+", " -> OUTPUT
+e -> OUTPUT
+"\n" -> OUTPUT
+GOTO END
+
+
+:BUBBLE
+
+GOTO SKIPBUBBLEA IF a < b
+store = a
+a = b
+b = store
+:SKIPBUBBLEA
+
+GOTO SKIPBUBBLEB IF b < c
+store = b
+b = c
+c = store
+:SKIPBUBBLEB
+
+GOTO SKIPBUBBLEC IF c < d
+store = c
+c = d
+d = store
+:SKIPBUBBLEC
+
+GOTO SKIPBUBBLED IF d < e
+store = d
+d = e
+e = store
+:SKIPBUBBLED
+
+GOTO CHECKSORTED
+
+:END
+// halt

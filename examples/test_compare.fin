@@ -1,0 +1,19 @@
+:START
+"A: " -> OUTPUT
+a <- INPUT
+"B: " -> OUTPUT
+b <- INPUT
+GOTO LARGER IF a > b
+GOTO SMALLER IF a < b
+"A is equal to B\n" -> OUTPUT
+GOTO AGAIN
+:LARGER
+"A is larger than B\n" -> OUTPUT
+GOTO AGAIN
+:SMALLER
+"A is smaller than B\n" -> OUTPUT
+:AGAIN
+"run again? (1/0)\n" -> OUTPUT
+again <- INPUT
+GOTO START IF again == 1
+GOTO AGAIN IF again > 1
